@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+@theme {
+  --color-brand-dark: #1a2e1a;
+  --color-brand-green: #3a7a5a;
+  --color-brand-light: #5a8a3a;
+  --color-brand-gold: #c27c2a;
+  --color-brand-warm: #d4a44a;
+  --color-cream: #f8f6f1;
+  --color-border: #e5e0d8;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateX(-50%) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

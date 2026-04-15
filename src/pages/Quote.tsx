@@ -1,8 +1,75 @@
-export function Quote() {
+import { useState } from "react";
+import InvoiceForm from "../components/InvoiceForm";
+import PreviewModal from "../components/PreviewModal";
+import { sharePDF } from "../utils/shareUtils";
+import type { FormData, CompanyInfo } from "../utils/types";
+
+interface Props {
+  formData: FormData;
+  companyInfo: CompanyInfo;
+  updateField: (field: keyof FormData, value: string | number) => void;
+  updateItem: (index: number, field: string, value: string) => void;
+  addItem: () => void;
+  removeItem: (index: number) => void;
+  onToast: (msg: string) => void;
+}
+
+export default function QuotePage({
+  formData,
+  companyInfo,
+  updateField,
+  updateItem,
+  addItem,
+  removeItem,
+  onToast,
+}: Props) {
+  const [showPreview, setShowPreview] = useState(false);
+
+  const handleNativeShare = async () => {
+    const result = await sharePDF(formData, companyInfo, true, "native");
+    if (result === "shared") onToast("Shared!");
+    else if (result !== "cancelled") onToast("PDF downloaded!");
+  };
+
   return (
-    <div className="quote">
-      <h2>Quote Component</h2>
-      <p>This is a quote Page.</p>
-    </div>
+    <>
+      <InvoiceForm
+        formData={formData}
+        updateField={updateField}
+        updateItem={updateItem}
+        addItem={addItem}
+        removeItem={removeItem}
+        isQuote={true}
+      />
+
+      {/* Bottom bar */}
+      <div
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#e5e0d8] flex gap-2 px-4 py-3 z-[100] max-w-lg lg:max-w-2xl mx-auto"
+        style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+      >
+        <button
+          onClick={() => setShowPreview(true)}
+          className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#3a7a5a] to-[#1a2e1a] text-white font-bold text-sm tracking-wide active:scale-[0.97] transition"
+        >
+          Preview Quote
+        </button>
+        <button
+          onClick={handleNativeShare}
+          className="py-3.5 px-5 rounded-xl border-2 border-[#3a7a5a] text-[#3a7a5a] font-bold text-sm active:scale-[0.97] transition hover:bg-[#3a7a5a]/5"
+        >
+          Share
+        </button>
+      </div>
+
+      {showPreview && (
+        <PreviewModal
+          formData={formData}
+          companyInfo={companyInfo}
+          isQuote={true}
+          onClose={() => setShowPreview(false)}
+          onToast={onToast}
+        />
+      )}
+    </>
   );
 }
