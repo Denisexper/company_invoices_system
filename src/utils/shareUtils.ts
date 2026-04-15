@@ -1,4 +1,4 @@
-import { generatePDF, fmt, calcTotal } from "./pdfGenerator"; // Cambiamos downloadPDF/getPDFBlob
+import { generatePDF } from "./pdfGenerator"; // Cambiamos downloadPDF/getPDFBlob
 import type { FormData, CompanyInfo } from "./types";
 
 type ShareResult = "shared" | "cancelled" | "downloaded" | "whatsapp" | "imessage";
@@ -14,7 +14,6 @@ export async function sharePDF(
 
   // Generamos el objeto doc una sola vez para usarlo según el método
   const doc = generatePDF(formData, companyInfo, isQuote);
-  const total = calcTotal(formData.items, formData.taxRate);
 
   if (method === "native" && navigator.share) {
     try {
