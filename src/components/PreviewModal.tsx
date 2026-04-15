@@ -5,10 +5,7 @@ import * as pdfjsLib from "pdfjs-dist";
 import type { FormData, CompanyInfo } from "../utils/types";
 
 // PDF.js worker setup
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.mjs",
-  import.meta.url
-).toString();
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
 interface Props {
   formData: FormData;
@@ -53,7 +50,7 @@ export default function PreviewModal({
           const ctx = canvas.getContext("2d");
           if (!ctx) continue;
 
-          await page.render({ canvas, viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport }).promise;
           images.push(canvas.toDataURL("image/png"));
         }
 

@@ -11,7 +11,7 @@ export async function sharePDF(
 ): Promise<ShareResult> {
   const type = isQuote ? "Quote" : "Invoice";
   const fileName = `${type}_${formData.invoiceNumber || "draft"}.pdf`;
-  
+
   // Generamos el objeto doc una sola vez para usarlo según el método
   const doc = generatePDF(formData, companyInfo, isQuote);
   const total = calcTotal(formData.items, formData.taxRate);
@@ -21,16 +21,16 @@ export async function sharePDF(
       // En lugar de getPDFBlob(), usamos doc.output("blob") directamente
       const blob = doc.output("blob");
       const file = new File([blob], fileName, { type: "application/pdf" });
-      
+
       const shareData: ShareData = {
         title: `${type} ${formData.invoiceNumber || ""}`,
-        text: `${type} from ${companyInfo.name || "Crawlspace Improvement"} - Total: ${fmt(total)}`,
+        text: `${type} for ${formData.clientName || "you"} from ${companyInfo.name || "Crawlspace Improvement"}.`,
       };
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         shareData.files = [file];
       }
-      
+
       await navigator.share(shareData);
       return "shared";
     } catch (e: unknown) {
@@ -42,10 +42,10 @@ export async function sharePDF(
 
   // Para métodos que requieren descarga + link externo
   if (method === "whatsapp") {
-    doc.save(fileName); 
+    doc.save(fileName);
     setTimeout(() => {
       const msg = encodeURIComponent(
-        `Hi! Please find the ${type.toLowerCase()} #${formData.invoiceNumber || ""} from ${companyInfo.name || "Crawlspace Improvement"}. Total: ${fmt(total)}`
+        `Hi ${formData.clientName || ""}! Please find the ${type.toLowerCase()} #${formData.invoiceNumber || ""} from ${companyInfo.name || "Crawlspace Improvement"}.`
       );
       window.open(`https://wa.me/?text=${msg}`, "_blank");
     }, 600);
@@ -56,7 +56,7 @@ export async function sharePDF(
     doc.save(fileName);
     setTimeout(() => {
       const msg = encodeURIComponent(
-        `${type} from ${companyInfo.name || "Crawlspace Improvement"}: ${fmt(total)}`
+        `${type} for ${formData.clientName || "you"} from ${companyInfo.name || "Crawlspace Improvement"}.`
       );
       window.location.href = `sms:&body=${msg}`;
     }, 600);
